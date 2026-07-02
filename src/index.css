@@ -14,7 +14,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #f4f1e9;
+  background: #f7f2ea;
   color: #283d2e;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -34,7 +34,7 @@ body {
 @media (min-width: 640px) {
   html,
   body {
-    background: #e7e0d0;
+    background: #e9ddc8;
   }
 }
 
@@ -94,10 +94,48 @@ button {
   }
 }
 
+@keyframes drink-cluster-drop {
+  0% {
+    transform: translate(var(--cluster-x), var(--cluster-start)) rotate(calc(var(--cluster-rotation) * -0.8)) scale(0.94);
+    opacity: 0;
+  }
+  58% {
+    transform: translate(calc(var(--cluster-x) * 0.74), calc(var(--cluster-y) + 18px)) rotate(calc(var(--cluster-rotation) * 1.2)) scale(1.03);
+    opacity: 1;
+  }
+  76% {
+    transform: translate(calc(var(--cluster-x) + 7px), calc(var(--cluster-y) - 9px)) rotate(calc(var(--cluster-rotation) * 0.7)) scale(0.99);
+  }
+  90% {
+    transform: translate(calc(var(--cluster-x) - 3px), calc(var(--cluster-y) + 3px)) rotate(calc(var(--cluster-rotation) * 1.05)) scale(1);
+  }
+  100% {
+    transform: translate(var(--cluster-x), var(--cluster-y)) rotate(var(--cluster-rotation)) scale(1);
+    opacity: 1;
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
 
 .animate-slide-up {
   animation: slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.drink-cluster-item {
+  animation: drink-cluster-drop 900ms cubic-bezier(0.18, 0.9, 0.2, 1) var(--cluster-delay) both;
+  will-change: transform, opacity;
+}
+
+.drink-cluster-static {
+  transform: translate(var(--cluster-x), var(--cluster-y)) rotate(var(--cluster-rotation));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drink-cluster-item {
+    animation: none;
+    transform: translate(var(--cluster-x), var(--cluster-y)) rotate(var(--cluster-rotation));
+    opacity: 1;
+  }
 }

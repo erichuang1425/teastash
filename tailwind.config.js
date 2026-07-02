@@ -5,12 +5,14 @@ export default {
     extend: {
       colors: {
         ink: '#283D2E',
+        roast: '#967447',
+        leaf: '#5F7F4F',
         matcha: {
-          DEFAULT: '#6B8E23',
-          light: '#A7C7A1',
+          DEFAULT: '#967447',
+          light: '#C9B99F',
         },
-        cream: '#F4F1E9',
-        tan: '#EADFC8',
+        cream: '#F7F2EA',
+        tan: '#E9DDC8',
       },
       fontFamily: {
         sans: [
@@ -29,8 +31,8 @@ export default {
         pill: '999px',
       },
       boxShadow: {
-        soft: '0 2px 12px rgba(40, 61, 46, 0.08)',
-        card: '0 4px 16px rgba(40, 61, 46, 0.10)',
+        soft: '0 8px 24px rgba(80, 61, 38, 0.08)',
+        card: '0 18px 44px rgba(80, 61, 38, 0.14)',
       },
       spacing: {
         'safe-top': 'env(safe-area-inset-top)',

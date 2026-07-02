@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
-import type { SyncTombstone, TeaItem, UsageRecord } from '../types'
+import type { DrinkRecord, SyncTombstone, TeaItem, UsageRecord } from '../types'
 
 interface TeaStashDB extends DBSchema {
   teas: {
@@ -15,10 +15,15 @@ interface TeaStashDB extends DBSchema {
     key: string
     value: SyncTombstone
   }
+  drinkRecords: {
+    key: string
+    value: DrinkRecord
+    indexes: { 'by-userId': string; 'by-user-date': [string, string] }
+  }
 }
 
 const DB_NAME = 'teastash'
-const DB_VERSION = 2
+const DB_VERSION = 3
 
 let dbPromise: Promise<IDBPDatabase<TeaStashDB>> | null = null
 
@@ -36,6 +41,11 @@ function getDb(): Promise<IDBPDatabase<TeaStashDB>> {
         }
         if (!db.objectStoreNames.contains('syncTombstones')) {
           db.createObjectStore('syncTombstones', { keyPath: 'id' })
+        }
+        if (!db.objectStoreNames.contains('drinkRecords')) {
+          const drinkStore = db.createObjectStore('drinkRecords', { keyPath: 'id' })
+          drinkStore.createIndex('by-userId', 'userId')
+          drinkStore.createIndex('by-user-date', ['userId', 'date'])
         }
       },
     })
@@ -123,6 +133,53 @@ export const teaStashDb = {
     await recordStore.clear()
     for (const tea of teas) await teaStore.put(tea)
     for (const record of usageRecords) await recordStore.put(record)
+    await tx.done
+  },
+
+  async getDrinkRecordsForUser(userId: string): Promise<DrinkRecord[]> {
+    const db = await getDb()
+    return db.getAllFromIndex('drinkRecords', 'by-userId', userId)
+  },
+  async putDrinkRecord(record: DrinkRecord): Promise<void> {
+    const db = await getDb()
+    await db.put('drinkRecords', record)
+  },
+  async putDrinkRecords(records: DrinkRecord[]): Promise<void> {
+    if (records.length === 0) return
+    const db = await getDb()
+    const tx = db.transaction('drinkRecords', 'readwrite')
+    for (const record of records) {
+      await tx.store.put(record)
+    }
+    await tx.done
+  },
+  async deleteDrinkRecord(id: string): Promise<void> {
+    const db = await getDb()
+    await db.delete('drinkRecords', id)
+  },
+  async replaceDrinkRecordsForUser(userId: string, records: DrinkRecord[]): Promise<void> {
+    const db = await getDb()
+    const tx = db.transaction('drinkRecords', 'readwrite')
+    const index = tx.store.index('by-userId')
+    let cursor = await index.openCursor(IDBKeyRange.only(userId))
+    while (cursor) {
+      await cursor.delete()
+      cursor = await cursor.continue()
+    }
+    for (const record of records) {
+      await tx.store.put(record)
+    }
+    await tx.done
+  },
+  async clearDrinkRecordsForUser(userId: string): Promise<void> {
+    const db = await getDb()
+    const tx = db.transaction('drinkRecords', 'readwrite')
+    const index = tx.store.index('by-userId')
+    let cursor = await index.openCursor(IDBKeyRange.only(userId))
+    while (cursor) {
+      await cursor.delete()
+      cursor = await cursor.continue()
+    }
     await tx.done
   },
 }

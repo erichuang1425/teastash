@@ -74,14 +74,6 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         teaStashDb.getAllUsageRecords(),
         teaStashDb.getAllSyncTombstones(),
       ])
-      const alreadySeeded = localStorage.getItem(SEEDED_KEY) === 'true'
-      if (loadedTeas.length === 0 && loadedRecords.length === 0 && !alreadySeeded) {
-        const sample = generateSampleData()
-        await teaStashDb.replaceAll(sample.teas, sample.usageRecords)
-        loadedTeas = sample.teas
-        loadedRecords = sample.usageRecords
-        localStorage.setItem(SEEDED_KEY, 'true')
-      }
       const normalizedRecords = loadedRecords.map(normalizeUsageRecord)
       if (normalizedRecords.some((record, index) => record.updatedAt !== loadedRecords[index]?.updatedAt)) {
         await Promise.all(normalizedRecords.map((record) => teaStashDb.putUsageRecord(record)))

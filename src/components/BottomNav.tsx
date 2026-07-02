@@ -1,19 +1,17 @@
 import { NavLink } from 'react-router-dom'
-import { Home, Package, Bell, BarChart3, Settings } from 'lucide-react'
+import { ChartNoAxesCombined, CupSoda, Settings } from 'lucide-react'
 import { useI18n } from '../i18n'
 
 const tabs = [
-  { to: '/', icon: Home, labelKey: 'nav.home', end: true },
-  { to: '/inventory', icon: Package, labelKey: 'nav.inventory', end: false },
-  { to: '/history', icon: BarChart3, labelKey: 'nav.history', end: false },
-  { to: '/reminders', icon: Bell, labelKey: 'nav.reminders', end: false },
-  { to: '/settings', icon: Settings, labelKey: 'nav.settings', end: false },
+  { to: '/app', icon: CupSoda, labelKey: 'nav.drinks', end: true },
+  { to: '/app/statistics', icon: ChartNoAxesCombined, labelKey: 'nav.statistics', end: false },
+  { to: '/app/settings', icon: Settings, labelKey: 'nav.settings', end: false },
 ] as const
 
 export function BottomNav() {
   const { t } = useI18n()
   return (
-    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-lg -translate-x-1/2 border-t border-ink/10 bg-white/95 backdrop-blur safe-bottom">
+    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-lg -translate-x-1/2 border-t border-ink/10 bg-white/94 backdrop-blur safe-bottom">
       <div className="mx-auto flex max-w-lg items-stretch justify-between px-1">
         {tabs.map(({ to, icon: Icon, labelKey, end }) => (
           <NavLink
@@ -21,8 +19,8 @@ export function BottomNav() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium ${
-                isActive ? 'text-matcha' : 'text-ink/45'
+              `flex min-h-[58px] flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-bold ${
+                isActive ? 'text-roast' : 'text-ink/45'
               }`
             }
           >

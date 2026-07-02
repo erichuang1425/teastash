@@ -1,7 +1,7 @@
 {
-  "name": "TeaStash 茶藏",
+  "name": "TeaStash",
   "short_name": "TeaStash",
-  "description": "A calm matcha and tea inventory and usage tracker.",
+  "description": "A calm tea-first drink tracker for cups, caffeine, spend, and habits.",
   "start_url": "/",
   "id": "/",
   "scope": "/",

@@ -1,78 +1,45 @@
-# TeaStash 茶藏
+# TeaStash
 
-A calm, mobile-first PWA for tracking your matcha and tea collection: remaining grams, per-use logs, and expiry reminders. Guest data stays on your device (IndexedDB + localStorage); optional Supabase auth/sync can mirror it across devices.
+TeaStash is a mobile-first drink tracker for tea-first caffeine habits. It tracks cups, caffeine, spend, sugar, optional photos, and homemade brewing notes.
 
-## Build & deploy to Netlify Drop
+New accounts start empty. The normal app flow does not load sample cups, sample photos, or fake statistics.
 
-```bash
-npm install
-npm run build
-```
+## App Flow
 
-Then drag the generated `dist/` folder onto [Netlify Drop](https://app.netlify.com/drop). The app uses hash-based routing, so no server config or redirects are needed.
+- Logged-out users land on `/` and see the product page.
+- `/login` and `/register` handle Supabase auth.
+- Signed-in users enter `/app`.
+- Tracker, day detail, add/edit drink, statistics, and settings routes are protected behind auth.
+- A saved Supabase session skips the public landing flow on refresh.
 
-To preview the production build locally first:
+## Tracker
 
-```bash
-npm run preview
-```
+- Calendar dashboard with month navigation and soft day tiles.
+- Add Drink form with date, time, optional photo, optional name, drink type, size, caffeine, spend, sugar, homemade toggle, brewing details, and notes.
+- Day detail with cups, caffeine, sugar, spend, and record cards.
+- Statistics with week, month, and year filters plus a one-time drink cluster animation.
+- Settings for account sync, language, logout, and clearing drink records.
 
-## Features
+## Data
 
-- **Inventory:** add/edit/delete tea tins with name, brand, type, tin color, net weight, remaining grams, purchase date, an unopened/opened status toggle, expiry dates, storage location, notes, and a photo (auto-resized before storing). Status filter tabs (All / In Use / Unopened / Finished) include live counts.
-- **Opened shelf life as days:** set "use within N days of opening" and TeaStash computes the opened use-by date, with +30/60/90 quick chips and the reference design's `(30 天)` display.
-- **Usage records:** log date, time, grams, purpose (usucha / koicha / latte / dessert / other), and notes, with gram quick-pick chips and defaults learned from that tea's last log. Remaining grams update automatically. Editing or deleting a record recalculates stock, with one-tap **Undo**. TeaStash warns when a use exceeds remaining grams.
-- **Insights:** per-tea usage pace (g/day, projected days-to-empty, and whether you're on track to finish before the use-by date), a "Use first" badge on the most urgent tin, per-tea stats, a monthly usage chart, and a by-purpose breakdown.
-- **History & stats:** usage grouped by day, total grams, average per use, use count, 6-month usage chart, per-tea filter, CSV/JSON export.
-- **Reminders:** expiring soon (opened), unopened expiry, and expired sections with day countdowns, plus `.ics` calendar export. Reminders stay in-app.
-- **Onboarding tour:** shows once for first-time users (`hasCompletedOnboarding` flag), restartable from Settings.
-- **i18n:** full English and Traditional Chinese. Auto-detects `zh-TW` / `zh-HK` / `zh-MO`, switchable and persisted in Settings.
-- **PWA:** installable with offline shell caching (Workbox via `vite-plugin-pwa`). "Add to Home Screen" help lives in Settings, with iOS Safari steps and native `beforeinstallprompt` support where available; hidden when already installed.
-- **Data safety:** form validation, no negative stock, delete confirmations (Escape / tap-outside to dismiss), JSON backup import with **field-level sanitization** (bad types coerced, out-of-range values clamped, orphan records dropped), and a resettable demo dataset.
+Drink records are stored locally in IndexedDB by `userId` and synced to Supabase when configured. Remote reads, writes, updates, and deletes use `user_id` filters, with row-level security in `supabase/setup.sql`.
 
-## Stack
+Run the SQL in `supabase/setup.sql` after creating a Supabase project. The older tea inventory tables remain in the setup file for backward compatibility, but the active tracker uses `drink_records`.
 
-Vite + React + TypeScript, Tailwind CSS, react-router (hash routing), `idb` for IndexedDB, `vite-plugin-pwa`, lucide-react icons.
-
-## Optional Supabase sync
-
-Run [supabase/setup.sql](supabase/setup.sql) in the Supabase SQL Editor, then set these Netlify environment variables:
+Required environment variables:
 
 ```bash
 VITE_SUPABASE_URL=...
 VITE_SUPABASE_PUBLISHABLE_KEY=...
 ```
 
-Feedback submissions use Netlify Forms via `public/__forms.html`.
-
-## Scripts
-
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Dev server at http://localhost:5173 |
-| `npm run build` | Type-check + production build into `dist/` |
-| `npm run preview` | Serve the built `dist/` locally |
-| `npm run lint` | Lint with oxlint |
-
-## Notes
-
-- Sample data uses fictional names and brands only.
-- Language, onboarding, and seed flags live in localStorage; teas and usage records live in IndexedDB, with optional Supabase sync after sign-in.
-- Tested layouts: 375px (iPhone SE), 390px (iPhone 13–15), and desktop.
-
-## Contributing
-
-Issues and pull requests are welcome. For local setup, run `npm install`, then `npm run dev`.
-
-Before opening a pull request, run:
+## Development
 
 ```bash
-npm run lint
+npm install
+npm run dev
 npm run build
+npm run lint
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution flow.
-
-## License
-
-TeaStash is released under the [MIT License](LICENSE).
+On Windows PowerShell, use `npm.cmd run build` or `npm.cmd run lint` if script execution blocks the `npm.ps1` shim.

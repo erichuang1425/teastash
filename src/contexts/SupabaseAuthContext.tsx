@@ -10,6 +10,11 @@ import {
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js'
 import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase'
 
+interface SignUpResult {
+  sessionActive: boolean
+  email: string | undefined
+}
+
 interface SupabaseAuthContextValue {
   client: SupabaseClient | null
   isConfigured: boolean
@@ -17,7 +22,7 @@ interface SupabaseAuthContextValue {
   session: Session | null
   user: User | null
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string) => Promise<SignUpResult>
   signOut: () => Promise<void>
 }
 
@@ -67,8 +72,9 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const signUp = useCallback(
     async (email: string, password: string) => {
       if (!client) throw new Error('supabase-not-configured')
-      const { error } = await client.auth.signUp({ email, password })
+      const { data, error } = await client.auth.signUp({ email, password })
       if (error) throw error
+      return { sessionActive: Boolean(data.session), email: data.user?.email }
     },
     [client],
   )

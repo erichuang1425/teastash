@@ -2,7 +2,7 @@
   "name": "teastash",
   "private": true,
   "version": "1.0.0",
-  "description": "A mobile-first tea inventory PWA with usage logs, expiry reminders, offline storage, and optional Supabase sync.",
+  "description": "A mobile-first tea-first drink tracker with caffeine, spend, photos, and Supabase sync.",
   "license": "MIT",
   "type": "module",
   "scripts": {

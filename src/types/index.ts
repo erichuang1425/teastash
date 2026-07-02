@@ -10,6 +10,41 @@ export type TeaType =
 
 export type UsagePurpose = 'usucha' | 'koicha' | 'latte' | 'dessert' | 'other'
 
+export type DrinkType =
+  | 'tea'
+  | 'greenTea'
+  | 'oolongTea'
+  | 'blackTea'
+  | 'milkTea'
+  | 'powderedTea'
+  | 'coffee'
+  | 'espresso'
+  | 'latte'
+  | 'homemade'
+  | 'energyDrink'
+  | 'other'
+
+export type DrinkSize = 'small' | 'medium' | 'large' | 'custom'
+
+export interface DrinkRecord {
+  id: string
+  userId: string
+  date: string // yyyy-mm-dd
+  time: string // HH:mm
+  name: string
+  drinkType: DrinkType
+  size: DrinkSize
+  caffeineMg: number
+  spendAmount: number
+  sugarG: number
+  homemade: boolean
+  brewingDetails: string
+  notes: string
+  imageDataUrl: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface TeaItem {
   id: string
   name: string
