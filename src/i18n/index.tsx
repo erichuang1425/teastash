@@ -5,7 +5,7 @@ import { loadLanguage, saveLanguage } from '../lib/settingsStorage'
 
 export type Language = 'en' | 'zh-TW'
 
-const dictionaries: Record<Language, Dictionary> = { en, 'zh-TW': zhTW }
+const dictionaries: Record<Language, Dictionary> = { en, 'zh-TW': zhTW}
 
 type Path<T, Prefix extends string = ''> = T extends string
   ? never
