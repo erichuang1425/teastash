@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { I18nProvider } from './i18n'
 import { AppDataProvider } from './contexts/AppDataContext'
+import { SupabaseAuthProvider } from './contexts/SupabaseAuthContext'
 import { ToastProvider } from './contexts/ToastContext'
 import { OnboardingProvider } from './contexts/OnboardingContext'
 import { InstallProvider } from './contexts/InstallContext'
@@ -15,6 +16,8 @@ import UsageForm from './pages/UsageForm'
 import History from './pages/History'
 import Reminders from './pages/Reminders'
 import Settings from './pages/Settings'
+import Feedback from './pages/Feedback'
+import Account from './pages/Account'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -39,6 +42,8 @@ function AppShell() {
         <Route path="/history" element={<History />} />
         <Route path="/reminders" element={<Reminders />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/account" element={<Account />} />
         <Route path="*" element={<Home />} />
       </Routes>
       <BottomNav />
@@ -51,15 +56,17 @@ export default function App() {
   return (
     <I18nProvider>
       <ToastProvider>
-        <AppDataProvider>
-          <OnboardingProvider>
-            <InstallProvider>
-              <HashRouter>
-                <AppShell />
-              </HashRouter>
-            </InstallProvider>
-          </OnboardingProvider>
-        </AppDataProvider>
+        <SupabaseAuthProvider>
+          <AppDataProvider>
+            <OnboardingProvider>
+              <InstallProvider>
+                <HashRouter>
+                  <AppShell />
+                </HashRouter>
+              </InstallProvider>
+            </OnboardingProvider>
+          </AppDataProvider>
+        </SupabaseAuthProvider>
       </ToastProvider>
     </I18nProvider>
   )

@@ -1,7 +1,7 @@
 import type { BackupPayload, TeaItem, TeaType, UsagePurpose, UsageRecord } from '../types'
 import { createId } from './id'
 
-const SCHEMA_VERSION = 1
+const SCHEMA_VERSION = 2
 
 export function buildBackup(teas: TeaItem[], usageRecords: UsageRecord[]): BackupPayload {
   return {
@@ -136,6 +136,7 @@ export function sanitizeBackup(payload: BackupPayload): { teas: TeaItem[]; usage
       notes: asString(obj.notes),
       remainingAfter: Math.max(0, asNumber(obj.remainingAfter)),
       createdAt: asString(obj.createdAt, now),
+      updatedAt: asString(obj.updatedAt, asString(obj.createdAt, now)),
     })
   }
 

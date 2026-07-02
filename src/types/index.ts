@@ -40,6 +40,24 @@ export interface UsageRecord {
   notes: string
   remainingAfter: number
   createdAt: string
+  updatedAt: string
+}
+
+export type SyncEntity = 'tea' | 'usage_record'
+
+export interface SyncTombstone {
+  id: string
+  entity: SyncEntity
+  itemId: string
+  updatedAt: string
+}
+
+export type SyncState = 'disabled' | 'signedOut' | 'idle' | 'syncing' | 'synced' | 'error'
+
+export interface SyncStatus {
+  state: SyncState
+  lastSyncedAt: string | null
+  error: string | null
 }
 
 export type TeaStatus = 'unopened' | 'active' | 'finished'

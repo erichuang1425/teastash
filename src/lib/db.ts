@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
-import type { TeaItem, UsageRecord } from '../types'
+import type { SyncTombstone, TeaItem, UsageRecord } from '../types'
 
 interface TeaStashDB extends DBSchema {
   teas: {
@@ -11,10 +11,14 @@ interface TeaStashDB extends DBSchema {
     value: UsageRecord
     indexes: { 'by-teaId': string; 'by-date': string }
   }
+  syncTombstones: {
+    key: string
+    value: SyncTombstone
+  }
 }
 
 const DB_NAME = 'teastash'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 let dbPromise: Promise<IDBPDatabase<TeaStashDB>> | null = null
 
@@ -29,6 +33,9 @@ function getDb(): Promise<IDBPDatabase<TeaStashDB>> {
           const store = db.createObjectStore('usageRecords', { keyPath: 'id' })
           store.createIndex('by-teaId', 'teaId')
           store.createIndex('by-date', 'date')
+        }
+        if (!db.objectStoreNames.contains('syncTombstones')) {
+          db.createObjectStore('syncTombstones', { keyPath: 'id' })
         }
       },
     })
@@ -70,6 +77,33 @@ export const teaStashDb = {
   async deleteUsageRecord(id: string): Promise<void> {
     const db = await getDb()
     await db.delete('usageRecords', id)
+  },
+
+  async getAllSyncTombstones(): Promise<SyncTombstone[]> {
+    const db = await getDb()
+    return db.getAll('syncTombstones')
+  },
+  async putSyncTombstone(tombstone: SyncTombstone): Promise<void> {
+    const db = await getDb()
+    await db.put('syncTombstones', tombstone)
+  },
+  async putSyncTombstones(tombstones: SyncTombstone[]): Promise<void> {
+    if (tombstones.length === 0) return
+    const db = await getDb()
+    const tx = db.transaction('syncTombstones', 'readwrite')
+    for (const tombstone of tombstones) {
+      await tx.store.put(tombstone)
+    }
+    await tx.done
+  },
+  async deleteSyncTombstones(ids: string[]): Promise<void> {
+    if (ids.length === 0) return
+    const db = await getDb()
+    const tx = db.transaction('syncTombstones', 'readwrite')
+    for (const id of ids) {
+      await tx.store.delete(id)
+    }
+    await tx.done
   },
 
   async clearAll(): Promise<void> {

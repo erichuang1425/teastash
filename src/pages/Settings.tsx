@@ -1,6 +1,8 @@
 import { useRef, useState, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Globe,
+  Cloud,
   Download,
   Upload,
   FileSpreadsheet,
@@ -9,6 +11,7 @@ import {
   HelpCircle,
   Smartphone,
   Info,
+  MessageSquare,
   ChevronRight,
   Check,
 } from 'lucide-react'
@@ -56,6 +59,7 @@ export default function Settings() {
   const { showToast } = useToast()
   const { restartTour } = useOnboarding()
   const { isStandalone, isIOS, canPromptNative, promptNativeInstall } = useInstall()
+  const navigate = useNavigate()
   const importInputRef = useRef<HTMLInputElement>(null)
 
   const [confirmReset, setConfirmReset] = useState(false)
@@ -131,6 +135,7 @@ export default function Settings() {
             {t('settings.dataSection')}
           </h3>
           <Card className="divide-y divide-ink/6 overflow-hidden">
+            <SettingsRow icon={Cloud} label={t('settings.accountSync')} onClick={() => navigate('/account')} />
             <SettingsRow icon={Download} label={t('settings.exportBackup')} onClick={handleExportBackup} />
             <SettingsRow icon={Upload} label={t('settings.importBackup')} onClick={() => importInputRef.current?.click()} />
             <SettingsRow icon={FileSpreadsheet} label={t('settings.exportCsv')} onClick={handleExportCsv} />
@@ -172,12 +177,15 @@ export default function Settings() {
           <h3 className="mb-2 px-1 text-[12.5px] font-semibold uppercase tracking-wide text-ink/40">
             {t('settings.aboutSection')}
           </h3>
-          <Card className="p-4">
-            <div className="flex items-start gap-3">
-              <Info size={18} className="mt-0.5 shrink-0 text-matcha" />
-              <div>
-                <p className="text-[13.5px] leading-relaxed text-ink/70">{t('settings.aboutBody')}</p>
-                <p className="mt-2 text-[12px] text-ink/40">{t('settings.version')} 1.0.0</p>
+          <Card className="divide-y divide-ink/6 overflow-hidden">
+            <SettingsRow icon={MessageSquare} label={t('settings.sendFeedback')} onClick={() => navigate('/feedback')} />
+            <div className="p-4">
+              <div className="flex items-start gap-3">
+                <Info size={18} className="mt-0.5 shrink-0 text-matcha" />
+                <div>
+                  <p className="text-[13.5px] leading-relaxed text-ink/70">{t('settings.aboutBody')}</p>
+                  <p className="mt-2 text-[12px] text-ink/40">{t('settings.version')} 1.0.0</p>
+                </div>
               </div>
             </div>
           </Card>

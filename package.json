@@ -2,6 +2,8 @@
   "name": "teastash",
   "private": true,
   "version": "1.0.0",
+  "description": "A mobile-first tea inventory PWA with usage logs, expiry reminders, offline storage, and optional Supabase sync.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.110.0",
     "idb": "^8.0.3",
     "lucide-react": "^1.23.0",
     "react": "^19.2.7",

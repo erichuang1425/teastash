@@ -152,6 +152,7 @@ export function generateSampleData(): { teas: TeaItem[]; usageRecords: UsageReco
       notes: entry.notes,
       remainingAfter: runningTotals[i],
       createdAt: now,
+      updatedAt: now,
     })
   })
 
@@ -178,6 +179,7 @@ export function generateSampleData(): { teas: TeaItem[]; usageRecords: UsageReco
       notes: '',
       remainingAfter: houjichaTotals[i],
       createdAt: now,
+      updatedAt: now,
     })
   })
 
