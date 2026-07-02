@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="116" fill="#F4F1E9"/>
+  <!-- tin body -->
+  <rect x="146" y="176" width="220" height="220" rx="34" fill="#283D2E"/>
+  <!-- tin lid -->
+  <rect x="132" y="128" width="248" height="76" rx="30" fill="#6B8E23"/>
+  <rect x="132" y="176" width="248" height="14" rx="7" fill="#556B2F"/>
+  <!-- label band -->
+  <rect x="176" y="242" width="160" height="112" rx="20" fill="#EADFC8"/>
+  <!-- leaf on label -->
+  <path d="M256 262c-30 16-42 42-40 66 2 20 16 32 36 30 24-2 44-24 46-56 1-16-2-30-6-42-10 4-24 8-36 2z" fill="#6B8E23" transform="rotate(8 256 300)"/>
+  <path d="M250 350c4-26 12-48 26-66" stroke="#3E5427" stroke-width="7" stroke-linecap="round" fill="none"/>
+</svg>
