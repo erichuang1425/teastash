@@ -3,6 +3,7 @@
 TeaStash is a mobile-first drink tracker for tea-first caffeine habits. It tracks cups, caffeine, spend, sugar, optional photos, and homemade brewing notes.
 
 New accounts start empty. The normal app flow does not load sample cups, sample photos, or fake statistics.
+Please visit https://teastash.netlify.app/ for more information.
 
 ## App Flow
 
