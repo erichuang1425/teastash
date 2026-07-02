@@ -21,8 +21,8 @@ interface SupabaseAuthContextValue {
   isLoading: boolean
   session: Session | null
   user: User | null
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<SignUpResult>
+  signIn: (email: string, password: string, captchaToken?: string) => Promise<void>
+  signUp: (email: string, password: string, captchaToken?: string) => Promise<SignUpResult>
   signOut: () => Promise<void>
 }
 
@@ -61,18 +61,26 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [client])
 
   const signIn = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, captchaToken?: string) => {
       if (!client) throw new Error('supabase-not-configured')
-      const { error } = await client.auth.signInWithPassword({ email, password })
+      const { error } = await client.auth.signInWithPassword({
+        email,
+        password,
+        options: captchaToken ? { captchaToken } : undefined,
+      })
       if (error) throw error
     },
     [client],
   )
 
   const signUp = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, captchaToken?: string) => {
       if (!client) throw new Error('supabase-not-configured')
-      const { data, error } = await client.auth.signUp({ email, password })
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: captchaToken ? { captchaToken } : undefined,
+      })
       if (error) throw error
       return { sessionActive: Boolean(data.session), email: data.user?.email }
     },

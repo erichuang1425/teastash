@@ -1,5 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { AlertCircle, Leaf, LogIn, UserPlus } from 'lucide-react'
 import { useI18n } from '../i18n'
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext'
@@ -12,6 +13,8 @@ interface AuthPageProps {
   mode: 'login' | 'register'
 }
 
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim()
+
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Something went wrong'
 }
@@ -20,16 +23,22 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const { t } = useI18n()
   const { showToast } = useToast()
   const navigate = useNavigate()
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
   const { isConfigured, isLoading, user, signIn, signUp } = useSupabaseAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const isTurnstileEnabled = Boolean(turnstileSiteKey)
+
   useEffect(() => {
     setFormError(null)
     setMessage(null)
+    setCaptchaToken(null)
+    turnstileRef.current?.reset()
   }, [mode])
 
   if (isLoading) {
@@ -44,8 +53,16 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!email.trim() || !password) {
+
+    const trimmedEmail = email.trim()
+
+    if (!trimmedEmail || !password) {
       setFormError(t('auth.credentialsRequired'))
+      return
+    }
+
+    if (isTurnstileEnabled && !captchaToken) {
+      setFormError('Please complete the security check before continuing.')
       return
     }
 
@@ -55,22 +72,24 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
     try {
       if (mode === 'login') {
-        await signIn(email.trim(), password)
+        await signIn(trimmedEmail, password, captchaToken ?? undefined)
         showToast(t('toast.signedIn'))
         navigate('/app', { replace: true })
       } else {
-        const result = await signUp(email.trim(), password)
+        const result = await signUp(trimmedEmail, password, captchaToken ?? undefined)
         if (result.sessionActive) {
           showToast(t('toast.accountCreated'))
           navigate('/app', { replace: true })
         } else {
-          setMessage(t('auth.confirmEmail', { email: result.email ?? email.trim() }))
+          setMessage(t('auth.confirmEmail', { email: result.email ?? trimmedEmail }))
         }
       }
     } catch (error) {
       setFormError(errorMessage(error))
     } finally {
       setIsSubmitting(false)
+      setCaptchaToken(null)
+      turnstileRef.current?.reset()
     }
   }
 
@@ -123,8 +142,21 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 onChange={(event) => setPassword(event.target.value)}
               />
             </Field>
+
+            {isTurnstileEnabled && (
+              <div className="overflow-hidden rounded-[18px]">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  onError={() => setCaptchaToken(null)}
+                />
+              </div>
+            )}
+
             {message && <p className="rounded-[18px] bg-leaf/10 px-4 py-3 text-[13.5px] font-semibold leading-5 text-leaf">{message}</p>}
-            <Button fullWidth disabled={!isConfigured || isSubmitting} type="submit">
+            <Button fullWidth disabled={!isConfigured || isSubmitting || (isTurnstileEnabled && !captchaToken)} type="submit">
               {isRegister ? <UserPlus size={18} /> : <LogIn size={18} />}
               {isRegister ? t('auth.register') : t('auth.login')}
             </Button>

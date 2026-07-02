@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@supabase/supabase-js": "2.110.0",
     "idb": "^8.0.3",
     "lucide-react": "^1.23.0",
